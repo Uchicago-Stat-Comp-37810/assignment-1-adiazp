@@ -1,0 +1,353 @@
+---
+title: "Homework 1"
+author: "Adrián Díaz"
+date: "6 de octubre de 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, cache = F}
+knitr::opts_chunk$set(error = TRUE)
+```
+
+```{r}
+#For loops, section 4.1.1, exercise 2
+#(a)
+Fibonacci<-c(1:30) #Creates a 30x1 vector to store the Fibonacci sequence
+Fibonacci[1]<-1 #Changes first value to 1
+Fibonacci[2]<-1 #Changes second value to 1
+for (i in 3:30) Fibonacci[i]<-Fibonacci[i-2]+Fibonacci[i-1] #Calculates the remaining 28 values of the sequence
+Fibonacciratio<-c(1:30) #Creates a 30x1 vector to store the ratio between consecutive terms in the Fibonacci sequence
+for (i in 2:30) Fibonacciratio[i]<-Fibonacci[i]/Fibonacci[i-1] #Calculates the ratio between terms for the remaining 29 terms, taking the ratio between the first and "zeroth" term as 1
+print(Fibonacciratio) #Prints the sequence of ratios between terms, it is clear it converges
+#(b)
+Convfibrat<-c(1:30) #Creates a 30x1 vector to store the difference between the ratio terms of the Fibonacci sequence and the Golden Ratio
+for (i in 1:30) Convfibrat[i]<-abs(Fibonacciratio[i]-(1/2)*(1+sqrt(5))) #Calculates the difference between the calculated ratios and the Golden Ratio
+which(Convfibrat<.00001) #Shows convergence is attained at iteration 14, with the given threshold
+```
+
+```{r}
+#For loops, section 4.1.1, exercise 3
+#(a)
+#answer should be 15
+answer<-0
+for (j in 1:5) answer<-answer+j
+print(answer)
+#(b)
+#answer should be the vector c(1, 2, 3, 4, 5)
+answer<-NULL
+for (j in 1:5) answer<-c(answer, j)
+print(answer)
+#(c)
+#answer should be the vector c(0, 1, 2, 3, 4, 5)
+answer<-0
+for (j in 1:5) answer<-c(answer, j)
+print(answer)
+#(d)
+#answer should be 120
+answer<-1
+for (j in 1:5) answer<-answer*j
+print(answer)
+#(e)
+#answer is a vector containing the sequence of 7 times j-1 mod 31
+answer<-3
+for (j in 1:15) answer<-c(answer, 7*answer[j] %% 31)
+print(answer)
+#It would be hard for me to guess this formula is what generated the sequence by simple inspection
+```
+
+```{r}
+#If statements, section 4.1.2, exercise 4
+rgic<-function(P,n) { #Name of the function to calculate interest payments for principal P and n periods
+  if (n <= 3) { #Condition to use an interest of 4% if there are 3 or less periods
+    i <- 0.04
+  } else { #Condition to use an interest of 5% if there are more than 3 periods
+    i <- 0.05
+  }
+  I<-P*((1+i)^n-1) #Calculation of interest earned over the period
+  return(I) #Returns the result
+  print(I) #Shows interest earned over the period on screen
+}
+```
+
+```{r}
+#If statements, section 4.1.2, exercise 5
+mir<-function(P,n,open) { #Function stating mortgage payment
+  if (open) { #If contract is open, monthly rate is 0.5%
+    i <- 0.005
+  } else { 
+    i <- 0.004 #If contract is closed, monthly rate is 0.4%
+  }
+  R<-P*i/(1-(1+i)^(-n)) #Calculation of mortgage payment
+  return(R) #Returns the result
+  print(R) #Shows mortgage payment on screen
+}
+```
+
+```{r}
+#While statements, section 4.1.3, exercise 2
+Fibonacci<-c(1,1) #First two terms of the sequence
+while (Fibonacci[length(Fibonacci)]<300) { #While values of the sequence are below 300...
+  Fibonacci<-c(Fibonacci,Fibonacci[length(Fibonacci)]+Fibonacci[length(Fibonacci)-1]) #...The vector is enlarged including the following term  of the sequence
+}
+print(Fibonacci) #Shows all terms of the resulting Fibonacci sequence
+```
+
+```{r}
+#While statements, section 4.1.3, exercise 4
+i<-.006 #Initial value
+while (abs(i-(1-((1+i)^(-20)))/19)>0.000001) { #As long as the difference between the value being evaluated and the resulting formula is above the throshold of 0.000001, i will be updated
+  i<-(1-((1+i)^(-20)))/19 #Update using the given formula
+}
+i #Resulting i
+```
+
+```{r}
+#While statements, section 4.1.3, exercise 5
+i<-c(0.006) #Same as the chunk above, but the terms are included in a vector until convergence is achieved
+while (abs(i[length(i)]-(1-((1+i[length(i)])^(-20)))/19)>0.000001) {
+  i<-c(i,(1-((1+i[length(i)])^(-20)))/19)
+}
+print(paste("Convergence took ",length(i)," iterations")) #States the number of iterations needed for convergence
+i<-i[length(i)] #Keeps only the last term of the vector
+i #Shows the final i
+```
+
+```{r}
+#Break statements, section 4.1.5, exercise 2
+#Note: Code comes from the book, incudes modifications/explanations
+#(a)
+Eratosthenes <- function(n) { #Print prime numbers up to n (based on the sieve of Eratosthenes)
+if (n >= 2) { #Input has to be a natural number greater or equal to 2
+  sieve <- seq(2, n) #We create a vector for each number to be evaluated, from 2 to n
+  primes <- c() #This will store the number of primes.
+  while (length(sieve) > 0) { #The vector of numbers to be evaluated will be reduced to 0 by the time one has to evaluate n
+    p <- sieve[1] #Natural number under scrutiny
+    primes <- c(primes, p) #Update of the number of primes
+    sieve <- sieve[(sieve %% p) != 0] #Removal of non-primes in the qeue
+  }
+  return(primes) #Prime numbers up to n
+} else {
+    stop("Input value of n should be at least 2.") #Error message
+  }
+}
+#(b) This will be the case because, by the time sqrt(n) is evaluated, all of its multiples that are less than n will have been removed by the algorithm.
+#(c)
+Eratosthenes <- function(n) {
+if (n >= 2) { #Input has to be a natural number greater or equal to 2
+  sieve <- seq(2, n) #We create a vector for each number to be evaluated, from 2 to n
+  primes <- c() #This will store the number of primes.
+  while (length(sieve) > 0) { #The vector of numbers to be evaluated will be reduced to 0 by the time one has to evaluate n
+    p <- sieve[1] #Natural number under scrutiny
+    primes <- c(primes, p) #Update of the number of primes
+    sieve <- sieve[(sieve %% p) != 0] #Removal of non-primes in the qeue
+    if (p>sqrt(n)) break #Stop once sqrt(n) is evaluated
+  }
+  primes<-c(primes,sieve) #Include those numbers in the sieve that had not been evaluated yet, as they are prime
+  return(primes) #Prime numbers up to n
+} else {
+    stop("Input value of n should be at least 2.") #Error message
+  }
+}
+```
+
+```{r}
+#Functions, section 4.2.1, exercise 2
+#(a)
+compound.interest<-function(P,i,n) { #Note that i is in percentage points, e.g. 1%
+  CompoundedP<-P*(1+i/100)^n #Formula
+  return(CompoundedP) #Returns the result
+  CompoundedP #Shows the result
+}
+#(b)
+#It suffices to evaluate the following expression:
+compound.interest(1000,1,30) #Balance is $1,347.849
+```
+
+```{r}
+#Functions, section 4.2.1, exercise 3
+bisect<-function(f,x1,x2,tol) { #Bisection for an user-supplied function, starting from x1 and x2 and a tolerance tol
+  if (sign(f(x1)) == sign(f(x2))) { #Makes sure the chosen terms are appropriate
+    stop("Error: The function evaluated at the terms chosen has the same sign!")
+  } else {
+    x<-c(min(x1,x2),max(x1,x2)) #A vector storing the initial values for x1 and x2
+    fx<-c(min(f(x1),f(x2)),max(f(x1),f(x2))) #A vector storing the initial values for x1 and x2 evaluated in the function
+    print(paste("Initial values: ",x[1]," and ",x[2])) #Shows x1 and x2 on screen
+    print(paste("Initial values for the function: ",fx[1]," and ",fx[2])) #Shows the function evaluated on screen
+    print(paste("Tolerance range: ",tol)) #Prints user-determined tolerance range
+    while (min(abs(f(x1)),abs(f(x2)))>tol) { #Keep bisecting until the function is close to the tolerance
+      if (abs(f(x1)) < abs(f(x2))) { #Replace x1 or x2 depending on which one is appropriate
+        x2<-(x1+x2)/2
+      } else {
+        x1<-(x1+x2)/2
+      }
+    }
+    x<-c(min(x1,x2),max(x1,x2)) #A vector storing the possible roots of the function
+    fx<-c(min(f(x1),f(x2)),max(f(x1),f(x2))) #A vector storing an interval for the values of the function, to measure approximation error
+  }
+  if (abs(f(x1))<abs(f(x2))) { #Keeps best candidate for being a root of the function
+    x<-x1
+    fx<-f(x1)
+  } else {
+    x<-x2
+    fx<-f(x2)
+  }
+  return(x) #Returns the best candidate for the root
+  print(paste("Possible root: ",x)) #Shows the best candidate for a root on the screen
+  print(paste("Function evaluated at the possible root: ",fx)) #Shows the function evaluated at the candidate on the screen
+}
+```
+
+```{r}
+#Putting it all together & checking, section 4.4.1, exercise 1
+#Note: Original code from the book:
+# 1. Use a merge sort to sort a vector
+mergesort <- function (x) {
+# Check for a vector that doesn't need sorting
+  len <-length(x)
+  if (len < 2) result <- x
+  else {
+# 2: sort x into result
+# 2.1: split x in half
+    y <- x[1:(len / 2)]
+    z <- x[(len / 2 + 1):len]
+# 2.2: sort y and z
+    y <- mergesort(y)
+    z <- mergesort(z)
+# 2.3: merge y and z into a sorted result
+    result <- c()
+# 2.3.1: while (some are left in both piles)
+    while (min(length(y), length(z)) > 0) {
+# 2.3.2: put the smallest first element on the end
+# 2.3.3: remove it from y or z
+    if (y[1] < z[1]) {
+      result <- c(result, y[1])
+      y <- y[-1]
+  } else {
+      result <- c(result, z[1])
+      z <- z[-1]
+    }
+  }
+# 2.3.4: put the leftovers onto the end of result
+    if (length(y) > 0)
+    result <- c(result, y)
+    else
+    result <- c(result, z)
+  }
+  return(result)
+}
+#Modified code, includes original notes when applicable:
+# 1. Use a merge sort to sort a vector
+mergesort2 <- function (x,decreasing) {
+# Check for a vector that doesn't need sorting
+  len <-length(x)
+  if (len < 2) result <- x
+  else {
+# 2: sort x into result
+# 2.1: split x in half
+    y <- x[1:(len / 2)]
+    z <- x[(len / 2 + 1):len]
+# 2.2: Use the new mergesort for y and z (change)
+    y <- mergesort2(y,decreasing)
+    z <- mergesort2(z,decreasing)
+# 2.3: merge y and z into a sorted result
+    result <- c()
+# 2.3.1: while (some are left in both piles)
+    while (min(length(y), length(z)) > 0) {
+# 2.3.1.1: decreasing condition
+      if (decreasing) {
+# 2.3.1.2: put the greatest first element on the end
+# 2.3.1.3: remove it from y or z
+      if (y[1] > z[1]) {
+       result <- c(result, y[1])
+        y <- y[-1]
+    } else {
+        result <- c(result, z[1])
+        z <- z[-1]
+      }
+# 2.3.1.4: put the leftovers onto the end of result
+        if (length(y) > 0)
+        result <- c(result, y)
+        else
+        result <- c(result, z)
+    } else {
+# 2.3.2.1: put the smallest first element on the end
+# 2.3.2.2: remove it from y or z
+    if (y[1] < z[1]) {
+      result <- c(result, y[1])
+      y <- y[-1]
+  } else {
+      result <- c(result, z[1])
+      z <- z[-1]
+  }
+# 2.3.2.3: put the leftovers onto the end of result
+    if (length(y) > 0)
+    result <- c(result, y)
+    else
+    result <- c(result, z)
+    }
+  }
+  return(result)
+  }
+}
+```
+
+```{r}
+#Putting it all together & checking, section 4.4.1, exercise 2
+#(a)
+newton2<-function(f,g,x0,y0,tol) { #Modified Newton algorithm for funcions f and g, based on initial values x0 and y0 respectively and a tolerance threshold tol
+  x<-x0
+  y<-y0
+  fn<-c(f(x,y),g(x,y))
+  while (abs(fn[1])>tol || abs(fn[2])>tol) { #Continue until the functions are, in magnitude, equal to or smaller than the tolerance threshold
+    x<-x-(fn[1]*deriv(expression(g),"y")-fn[2]*deriv(expression(f),"y"))/(deriv(expression(f),"x")*deriv(expression(g),"y")-deriv(expression(f),"y")*deriv(expression(g),"x")) #Formula for x
+    y<-y-(fn[2]*deriv(expression(f),"x")-fn[1]*deriv(expression(g),"x"))/(deriv(expression(f),"x")*deriv(expression(g),"y")-deriv(expression(f),"y")*deriv(expression(g),"x")) #Formula for y
+  }
+  fn<-fn(f(x),g(x)) #Evaluation of results
+  print(x) #Show roots to the user
+  print(y) #Show roots to the user
+  print(fn) #Show how close the functions are to zero
+} 
+#(b)
+#The analytic result, by using equation (1) and making y = -x, is x=sqrt(2/3), y=-sqrt(2/3)
+```
+
+```{r}
+#Chapter 4, exercise 1
+directpoly<-function(x,c) { #Direct polynomial, taking c as coefficients c(1) to c(n) and x as the variable
+  Pcoef<-c() #Empty vector to begin iterating
+  for (i in 1:length(c)) {
+    Pcoef<-c(Pcoef,c[i]*x^(i-1)) #Generates c(i)*x^(i-1)
+  }
+  P<-sum(Pcoef) #Sums to get the results of the evaluated polynomial
+  print(paste("The value of the polynomial is ",P)) #Shows the result to the user
+}
+```
+
+
+```{r}
+#Chapter 4, exercise 2
+hornerpoly<-function(x,c) { #Horner's method, taking c as coefficients c(1) to c(n) and x as the variable
+  a<-c[length(c)] #a(n)
+  for (i in seq(from=length(c)-1,to=1)) { 
+    a<-c(a,a[length(a)]*x+c[i]) #Calculates each a(i) from n-1 to 1
+  }
+  a<-a[length(a)] #This is a(1) under the algorithm
+  print(paste("The value of the polynomial is ",a)) #Shows the result to the user
+}
+```
+
+```{r}
+#Chapter 4, exercise 3
+#(a)
+#Execute the code
+system.time(directpoly(x=seq(-10, 10, length=5000000), c(1, -2, 2, 3, 4, 6, 7)))
+system.time(hornerpoly(x=seq(-10, 10, length=5000000), c(1, -2, 2, 3, 4, 6, 7)))
+#It seems Horner's method is faster than calculating the polynomial directly, which makes sense since there are no power calculations involved
+#(b)
+#Now, for the polynomial at hand:
+system.time(directpoly(x=seq(-10, 10, length=5000000), c(-3, 17, 2)))
+system.time(hornerpoly(x=seq(-10, 10, length=5000000), c(-3, 17, 2)))
+#Horner's method is quicker in this case as well but, since the polynomial is only degree 2, it doesn't make that much of a difference as far as efficiency gains go.
+```
